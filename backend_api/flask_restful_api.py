@@ -18,7 +18,7 @@ class CommunicateData(Resource):
 class MultiplicateData(Resource):
     def get(self, num):
         print('result: ', num*10)
-        return {'result': num*10}
+        return {'result': num*10, 'another_key': 'a message'}
 
     def post(self, num):
         return {'result': num*10}, 201

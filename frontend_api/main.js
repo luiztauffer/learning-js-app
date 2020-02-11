@@ -76,10 +76,12 @@ ipcMain.on('item:send_to_python', function(event, item){
     console.log(`HEADERS: ${JSON.stringify(response.headers)}`)
     response.on('data', (chunk) => {
       console.log(`BODY: ${chunk}`)
-      console.log(Object.entries(chunk))
+      // Parse chunk (buffer type)
+      var chk = JSON.parse(chunk.toString());
+      console.log(chk);
+      console.log(chk.result+30.987)
       // Send response to be written on list
-      // console.log(`BODY: ${chunk}['result']`)
-      // ipcRenderer.send('item:read_from_python', chunk['result']);
+      mainWindow.webContents.send('item:read_from_python', chk.result);
     })
     response.on('end', () => {
       console.log('No more data in response.')
