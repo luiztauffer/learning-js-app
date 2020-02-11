@@ -1,0 +1,14 @@
+{
+  "name": "learningjsapp",
+  "version": "1.0.0",
+  "description": "learning to develop js apps",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Luiz Tauffer",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^8.0.0"
+  }
+}

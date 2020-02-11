@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My first app</title>
+</head>
+<body>
+  <form id="main_form">
+    <label>Send to Python</label>
+    <input type="text" id="item_to_python" autofocus>
+    <button type="submit">talk to python</button>
+    <a href="http://127.0.0.1:5000/">Go</a>
+    <h1>list of responses:</h1>
+    <ul id="main_list"></ul>
+  </form>
+  <!-- <h1>list of things:</h1> -->
+  <!-- <ul id="main_list"></ul> -->
+  <script type="text/javascript">
+    // const {ipcRenderer} = require('electron');
+    // const ul = document.getElementById("main_list");
+    // // Listener to add item
+    // ipcRenderer.on('item:add', addItemToList);
+    // function addItemToList(event, item){
+    //   // Creates an HTML element
+    //   const li = document.createElement('li');
+    //   const itemText = document.createTextNode(item);
+    //   li.appendChild(itemText);
+    //   ul.appendChild(li);
+    // }
+    // // Listener to clear all items
+    // ipcRenderer.on('item:clear', clearItemsFromList);
+    // function clearItemsFromList(){
+    //   ul.innerHTML = '';
+    // }
+    // // Listener to clear individual items
+    // ul.addEventListener('dblclick', clearItemFromList);
+    // function clearItemFromList(event){
+    //   event.target.remove();
+    // }
+
+    const {ipcRenderer} = require('electron');
+
+    // Listen to button event
+    const form = document.getElementById("main_form");
+    form.addEventListener('submit', talkToPython);
+
+    function talkToPython(event){
+      event.preventDefault();
+      const item = document.getElementById("item_to_python").value;
+      ipcRenderer.send('item:send_to_python', item);
+    }
+
+    // Listener to get response item from python
+    ipcRenderer.on('item:read_from_python', writeResult);
+    function writeResult(event, item){
+      // Updates HTML element
+      const ul = document.getElementById("main_list");
+      const li = document.createElement('li');
+      const itemText = document.createTextNode(item);
+      li.appendChild(itemText);
+      ul.appendChild(li);
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Add a new item to list!</title>
+</head>
+<body>
+  <form id="first_form">
+    <div>
+      <label>Add item</label>
+      <input type="text" id="form_item" autofocus>
+    </div>
+    <button type="submit">add item</button>
+  </form>
+
+  <script>
+    const {ipcRenderer} = require('electron');
+
+    // Returns the first element within the document that matches the specified selector
+    // const form = document.querySelector('form');
+    const form = document.getElementById("first_form");
+    form.addEventListener('submit', submitForm);
+
+    function submitForm(event){
+      event.preventDefault();
+      const item = document.getElementById("form_item").value;
+      ipcRenderer.send('item:add', item);
+    }
+  </script>
+</body>
+</html>
