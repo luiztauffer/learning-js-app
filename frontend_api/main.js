@@ -3,7 +3,7 @@ const path = require('path');
 const {app, BrowserWindow, Menu, ipcMain, net} = require('electron');
 
 let mainWindow;
-let addWindow;
+let secondary;
 
 // Creates mainWindow
 function createMainWindow(){
@@ -36,28 +36,28 @@ function createMainWindow(){
   })
 }
 
-// Creates addWindow
-function createAddWindow(){
+// Creates secondaryWindow
+function createSecondaryWindow(){
   // Create a new window instance
-  addWindow = new BrowserWindow({
+  secondaryWindow = new BrowserWindow({
     width: 400,
     height: 300,
-    title: 'Add new item',
+    title: 'A secondary window',
     webPreferences: {
         nodeIntegration: true
     }
   });
 
   // Load html into window
-  addWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'addWindow.html'),
+  secondary.loadURL(url.format({
+    pathname: path.join(__dirname, 'secondary.html'),
     protocol: 'file:',
     slashes: true
   }));
 
   // Garbage collector
-  addWindow.on('close', function(){
-    addWindow = null;
+  secondary.on('close', function(){
+    secondary = null;
   })
 }
 
@@ -76,7 +76,7 @@ ipcMain.on('item:send_to_python', function(event, item){
     console.log(`HEADERS: ${JSON.stringify(response.headers)}`)
     response.on('data', (chunk) => {
       console.log(`BODY: ${chunk}`)
-      // console.log(JSON.stringify(chunk.result))
+      console.log(Object.entries(chunk))
       // Send response to be written on list
       // console.log(`BODY: ${chunk}['result']`)
       // ipcRenderer.send('item:read_from_python', chunk['result']);
@@ -88,10 +88,10 @@ ipcMain.on('item:send_to_python', function(event, item){
   request.end()
 })
 
-// Catch item:add sent from addWindow form button
+// Catch item:add sent from secondary form button
 ipcMain.on('item:add', function(event, item){
   mainWindow.webContents.send('item:add', item);
-  // addWindow.close();
+  // secondary.close();
 });
 
 // Create menu template
@@ -100,9 +100,9 @@ const mainMenuTemplate = [
     label: 'File',
     submenu: [
       {
-        label: 'Add item',
+        label: 'Open new window',
         click(){
-          createAddWindow();
+          createSecondaryWindow();
         }
       },
       {
