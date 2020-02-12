@@ -63,7 +63,8 @@ function createSecondaryWindow(){
 
 // Catch item:send_to_python sent from form
 ipcMain.on('item:send_to_python', function(event, item){
-  const request = net.request('http://localhost:5000/multiplicate/'+item)
+  // const request = net.request('http://localhost:5000/multiplicate/'+item)
+  const request = net.request('http://localhost:5000/plotdatapoint/'+item)
   // const request = net.request({
   //   method: 'GET',
   //   protocol: 'https:',
@@ -75,13 +76,14 @@ ipcMain.on('item:send_to_python', function(event, item){
     console.log(`STATUS: ${response.statusCode}`)
     console.log(`HEADERS: ${JSON.stringify(response.headers)}`)
     response.on('data', (chunk) => {
-      console.log(`BODY: ${chunk}`)
+      // console.log(`BODY: ${chunk}`)
       // Parse chunk (buffer type)
       var chk = JSON.parse(chunk.toString());
-      console.log(chk);
-      console.log(chk.result+30.987)
+      // console.log(chk);
+      console.log(chk.figure)
       // Send response to be written on list
-      mainWindow.webContents.send('item:read_from_python', chk.result);
+      // mainWindow.webContents.send('item:read_from_python', chk.result);
+      mainWindow.webContents.send('item:plot_from_python', chk.figure);
     })
     response.on('end', () => {
       console.log('No more data in response.')
