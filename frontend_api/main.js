@@ -1,6 +1,6 @@
 const url = require('url');
 const path = require('path');
-const {app, BrowserWindow, Menu, ipcMain, net} = require('electron');
+const {app, BrowserWindow, Menu, ipcMain, net, dialog} = require('electron');
 
 let mainWindow;
 let secondary;
@@ -61,34 +61,37 @@ function createSecondaryWindow(){
   })
 }
 
+// Opens File Dialog
+function openFileDialog(){
+  const file = dialog.showOpenDialogSync(mainWindow, {
+    title: 'Open data file',
+    properties: ['openFile'],
+    filters: [
+      { name: 'Data files', extensions: ['csv'] },
+    ],
+  })
+  // If no file selected, just return
+  if (!file) return;
+  // If a file was selected, send it to backend
+  console.log(`Sending ${file} to backend server...`)
+  const request = net.request('http://localhost:5000/plotdatapoint/'+item)
+}
+
 // Catch item:send_to_python sent from form
 ipcMain.on('item:send_to_python', function(event, item){
-  // const request = net.request('http://localhost:5000/multiplicate/'+item)
-  const request = net.request('http://localhost:5000/plotdatapoint/'+item)
-  // const request = net.request({
-  //   method: 'GET',
-  //   protocol: 'https:',
-  //   hostname: '127.0.0.1',
-  //   port: 5000,
-  //   path: '/'//multiplicate/8'
-  // });
-  request.on('response', (response) => {
-    console.log(`STATUS: ${response.statusCode}`)
-    console.log(`HEADERS: ${JSON.stringify(response.headers)}`)
-    response.on('data', (chunk) => {
-      // console.log(`BODY: ${chunk}`)
-      // Parse chunk (buffer type)
-      var chk = JSON.parse(chunk.toString());
-      // console.log(chk);
-      console.log(chk.figure)
-      // Send response to be written on list
-      // mainWindow.webContents.send('item:read_from_python', chk.result);
-      mainWindow.webContents.send('item:plot_from_python', chk.figure);
-    })
-    response.on('end', () => {
-      console.log('No more data in response.')
-    })
-  })
+  // const request = net.request('http://localhost:5000/storecsvdata')
+  const request = net.request({
+    method: 'POST',
+    protocol: 'http:',
+    hostname: 'localhost',
+    port: 5000,
+    path: '/storecsvdata',
+    headers: {
+          'Content-Type': 'text/csv',
+          'Content-Length': postData.length
+        }
+  });
+
   request.end()
 })
 
@@ -98,15 +101,23 @@ ipcMain.on('item:add', function(event, item){
   // secondary.close();
 });
 
+// Catch item:add sent from secondary form button
+ipcMain.on('item:add', function(event, item){
+  mainWindow.webContents.send('item:add', item);
+  // secondary.close();
+});
+
+
+
 // Create menu template
 const mainMenuTemplate = [
   {
     label: 'File',
     submenu: [
       {
-        label: 'Open new window',
+        label: 'Open File',
         click(){
-          createSecondaryWindow();
+          openFileDialog();
         }
       },
       {
