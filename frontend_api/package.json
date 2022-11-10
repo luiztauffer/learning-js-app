@@ -9,6 +9,6 @@
   "author": "Luiz Tauffer",
   "license": "ISC",
   "dependencies": {
-    "electron": "^8.0.0"
+    "electron": "^18.3.7"
   }
 }
